@@ -1,0 +1,10 @@
+{
+  "pages": ["pages/reservation/index"],
+  "window": {
+    "navigationBarTitleText": "入住预约",
+    "navigationBarBackgroundColor": "#f0f8fc",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f0f8fc"
+  },
+  "style": "v2"
+}

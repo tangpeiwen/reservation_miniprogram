@@ -1,0 +1,12 @@
+{
+  "description": "阿育吠陀入住预约 UI",
+  "miniprogramRoot": "miniprogram/",
+  "compileType": "miniprogram",
+  "appid": "touristappid",
+  "projectname": "stay-reservation",
+  "setting": {
+    "es6": true,
+    "minified": true,
+    "minifyWXML": true
+  }
+}

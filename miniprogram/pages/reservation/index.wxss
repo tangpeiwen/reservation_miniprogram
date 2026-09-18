@@ -1,0 +1,63 @@
+.page { padding: 0 26rpx 32rpx; padding-bottom: calc(32rpx + env(safe-area-inset-bottom)); }
+.hero { height: 348rpx; position: relative; overflow: hidden; }
+.hero-copy { position: relative; z-index: 1; padding: 86rpx 0 0 28rpx; }
+.brand { display: block; font-size: 32rpx; font-weight: 700; letter-spacing: 0; }
+.hero-title { display: block; font-size: 72rpx; font-weight: 800; letter-spacing: 4rpx; margin-top: 8rpx; }
+.underline { position: relative; overflow: hidden; width: 267rpx; height: 26rpx; margin-top: 0; }
+.underline-source { position: absolute; width: 750rpx; height: 1584rpx; left: -59rpx; top: -283rpx; }
+.cat { position: absolute; right: 0; top: 7rpx; width: 324rpx; height: 330rpx; }
+.card { background: rgba(255,255,255,.94); border: 2rpx solid #d7e2eb; border-radius: 23rpx; padding: 28rpx 26rpx; margin-bottom: 18rpx; }
+.section-title { display: block; font-size: 40rpx; line-height: 1.4; font-weight: 750; margin-bottom: 19rpx; }
+.row { display: flex; align-items: center; margin-top: 18rpx; gap: 12rpx; }
+.label { width: 150rpx; flex-shrink: 0; font-size: 31rpx; }
+.control { flex: 1; min-width: 0; }
+.date-field, .field { background: #fff; border: 2rpx solid #d5e0eb; border-radius: 12rpx; min-height: 70rpx; padding: 0 20rpx; font-size: 30rpx; }
+.date-default { color: #606b7d; }
+.date-field { display: flex; align-items: center; justify-content: space-between; gap: 8rpx; }
+.calendar { width: 29rpx; height: 30rpx; border: 3rpx solid #7791ab; border-radius: 5rpx; position: relative; flex-shrink: 0; }
+.calendar::before, .calendar::after { content: ''; position: absolute; top: -7rpx; width: 3rpx; height: 10rpx; background: #7791ab; }
+.calendar::before { left: 5rpx; } .calendar::after { right: 5rpx; }
+.calendar-line { border-top: 3rpx solid #7791ab; margin-top: 7rpx; }
+.nights-row { align-items: flex-start; } .nights-row > .label { padding-top: 18rpx; }
+.night-options { display: flex; gap: 14rpx; }
+.night { width: 158rpx; height: 66rpx; line-height: 62rpx; background: #fff; border: 2rpx solid #d5e0eb; font-size: 32rpx; }
+.night.selected { border-color: #a4c9ec; background: #c2dff7; color: rgba(64, 44, 37, .82); }
+.stay-summary { display: flex; align-items: center; justify-content: center; min-height: 72rpx; background: #edf7ff; border-radius: 12rpx; padding: 14rpx; color: rgba(64, 44, 37, .72); font-size: 30rpx; line-height: 1.5; text-align: center; margin-top: 14rpx; }
+.stepper { display: flex; height: 46px; border: 2rpx solid #d5e0eb; border-radius: 12rpx; overflow: hidden; }
+.page .stepper button { background: #fff; flex: 0 0 44px; width: 44px; height: 44px; margin: 0; padding: 0; line-height: 44px; color: #7791ab; font-size: 42rpx; border-radius: 0; }
+.stepper button[disabled] { color: #bdcbd7; background: #f8fafc; }
+.stepper text { width: 88rpx; text-align: center; line-height: 44px; border-left: 2rpx solid #d5e0eb; border-right: 2rpx solid #d5e0eb; font-size: 32rpx; }
+.room-note { display: block; margin: 15rpx 0 0 162rpx; font-size: 25rpx; color: #606b7d; }
+.placeholder { color: #606b7d; font-family: "LemiMilkFoam", sans-serif; font-size: 24rpx; font-weight: normal; }
+.notes-row { align-items: flex-start; } .notes-row .label { padding-top: 18rpx; }
+.optional { font-size: 26rpx; }
+.notes { height: 116rpx; padding-top: 17rpx; line-height: 1.5; }
+.primary { background: #b6d8f5; color: rgba(64, 44, 37, .84); font-size: 32rpx; font-weight: 600; height: 82rpx; line-height: 82rpx; border-radius: 14rpx; margin-top: 18rpx; }
+.primary:active, .night:active { opacity: .8; }
+.footnote { text-align: center; font-size: 22rpx; line-height: 1.5; color: #606b7d; margin-top: 10rpx; }
+.demo-note { display: block; text-align: center; color: #606b7d; font-size: 22rpx; }
+.overlay { position: fixed; z-index: 10; inset: 0; background: rgba(41,37,35,.35); display: flex; align-items: flex-end; }
+.sheet { background: #fff; border-radius: 28rpx 28rpx 0 0; padding: 30rpx 32rpx; padding-bottom: calc(30rpx + env(safe-area-inset-bottom)); width: 100%; }
+.sheet-heading { display: flex; justify-content: space-between; align-items: flex-start; }
+.calendar-sheet .sheet-heading { margin-bottom: 24rpx; }
+.sheet .sheet-heading button.close { flex: 0 0 44px; width: 44px; min-width: 0; height: 44px; margin: 0; padding: 0; line-height: 44px; background: #f0f6fa; font-size: 40rpx; border-radius: 8rpx; }
+.review-body { max-height: 48vh; }
+.review-row { display: flex; gap: 24rpx; justify-content: space-between; padding: 17rpx 0; border-bottom: 1rpx solid #edf1f5; }
+.review-row > text:first-child { color: #606b7d; flex-shrink: 0; }
+.review-row > text:last-child { text-align: right; word-break: break-all; white-space: pre-wrap; }
+.review-stay { background: #edf7ff; padding: 18rpx; border-radius: 12rpx; font-size: 27rpx; margin-top: 12rpx; }
+.review-notice { font-size: 25rpx; color: #606b7d; text-align: center; margin-top: 24rpx; }
+
+.date-trigger { background: transparent; text-align: left; line-height: normal; }
+.month-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20rpx; font-size: 32rpx; font-weight: 600; }
+.sheet .month-nav button { flex: 0 0 44px; width: 44px; min-width: 0; height: 44px; margin: 0; padding: 0; line-height: 44px; background: #f0f6fa; color: #7791ab; font-size: 40rpx; border-radius: 8rpx; }
+.calendar-grid { display: flex; flex-wrap: wrap; }
+.weekdays text, .day-cell { width: 14.285714%; text-align: center; }
+.weekdays { color: #606b7d; font-size: 26rpx; margin-bottom: 12rpx; }
+.day-cell { height: 44px; display: flex; align-items: center; justify-content: center; }
+.sheet .calendar-grid button.day { flex: 1; width: 100%; min-width: 0; height: 44px; margin: 0; padding: 0; line-height: 44px; background: transparent; border: 2rpx solid transparent; border-radius: 6rpx; }
+.sheet .calendar-grid button.day { position: relative; border: 0; z-index: 0; }
+.sheet .calendar-grid button.day-selected { font-weight: 700; }
+.sheet .calendar-grid button.day-selected::before { content: ''; position: absolute; z-index: -1; width: 32px; height: 32px; left: 50%; top: 50%; transform: translate(-50%, -50%); box-sizing: border-box; border: 1px solid #8fbee9; border-radius: 3px; background: #edf7ff; }
+.calendar-body { height: 290px; max-height: 42vh; }
+.calendar-selection { color: #606b7d; font-size: 24rpx; line-height: 1.5; margin-top: 16rpx; }

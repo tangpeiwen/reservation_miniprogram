@@ -1,0 +1,9 @@
+@import "styles/font.wxss";
+
+page { background: #f0f8fc; color: #402c25; font-family: "LemiMilkFoam", -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: 31rpx; }
+view, button, input, textarea { box-sizing: border-box; }
+button { margin: 0; padding: 0; color: inherit; font-size: inherit; border-radius: 14rpx; }
+button::after { border: none; }
+button[disabled] { color: #b4c0ca; background: #f8fafc; }
+
+text, button, input, textarea { font-family: "LemiMilkFoam", -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
