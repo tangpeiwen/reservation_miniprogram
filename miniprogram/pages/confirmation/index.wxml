@@ -1,0 +1,44 @@
+<view class="page">
+  <view class="status-block">
+    <view class="status-copy">
+      <view class="status-mark" aria-hidden="true"><view class="status-check" /></view>
+      <text class="status-title">凭证预览</text>
+      <text class="status-description">请核对信息，可截图或保存</text>
+      <text class="status-badge">尚未提交</text>
+    </view>
+    <image class="chick" src="/assets/chick.png" mode="aspectFit" aria-hidden="true" />
+  </view>
+
+  <view class="voucher" aria-label="预约凭证">
+    <view class="voucher-heading">
+      <text class="voucher-title">预约凭证预览</text>
+      <text class="voucher-number">{{voucherNo}}</text>
+    </view>
+
+    <view class="date-range">
+      <view><text class="date-caption">入住 · {{checkInYear}}年</text><text class="date-main">{{checkInShort}}</text></view>
+      <view class="date-arrow" aria-hidden="true"><view class="arrow-line" /></view>
+      <view class="date-end"><text class="date-caption">离店 · {{checkOutYear}}年</text><text class="date-main">{{checkOutShort}}</text></view>
+    </view>
+
+    <view class="stay-facts">
+      <text>{{nights}} 晚</text><view class="fact-dot" />
+      <text>{{guests}} 人</text><view class="fact-dot" />
+      <text>{{rooms}} 间双人房</text>
+    </view>
+
+    <view class="guest-row"><text class="row-label">预约人</text><text class="row-value">{{name}}</text></view>
+
+    <view class="benefit-row">
+      <view class="benefit-copy"><text class="benefit-label">社群专属</text><text class="benefit-note">使用方式以工作人员确认为准</text></view>
+      <text class="benefit-value">¥100 入住优惠</text>
+    </view>
+  </view>
+
+  <view class="status-note">当前信息尚未提交或保存</view>
+  <button class="save-button {{saving ? 'saving' : ''}}" bindtap="saveVoucher" disabled="{{saving}}">{{saving ? '正在生成…' : '保存预览凭证'}}</button>
+  <text class="screenshot-hint">也可以直接截图保存</text>
+  <text class="demo-note">凭证预览 · 当前信息不会保存或提交</text>
+
+  <canvas type="2d" id="voucherCanvas" class="export-canvas" />
+</view>

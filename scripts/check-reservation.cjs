@@ -4,7 +4,7 @@ const vm = require('node:vm')
 const path = require('node:path')
 const root = path.resolve(__dirname, '..')
 let page
-let redirectOptions
+let navigateOptions
 let scrollOptions
 let nowMs = Date.UTC(2028, 1, 26, 16)
 class TestDate extends Date {
@@ -14,7 +14,7 @@ vm.runInNewContext(fs.readFileSync(path.join(root, 'miniprogram/pages/reservatio
   Page: value => { page = value },
   Date: TestDate,
   wx: {
-    redirectTo: options => { redirectOptions = options },
+    navigateTo: options => { navigateOptions = options },
     pageScrollTo: options => { scrollOptions = options }
   }
 })
@@ -93,7 +93,16 @@ page.openReview()
 page.confirmReview()
 assert.equal(page.data.reviewVisible, false)
 assert.equal(page.data.reviewConfirmed, true)
-assert.equal(redirectOptions, undefined)
+assert(navigateOptions)
+const [previewPath, previewQuery] = navigateOptions.url.split('?')
+assert.equal(previewPath, '/pages/confirmation/index')
+const previewParams = new URLSearchParams(previewQuery)
+assert.equal(previewParams.get('date'), '2028-02-28')
+assert.equal(previewParams.get('nights'), '1')
+assert.equal(previewParams.get('guests'), '3')
+assert.equal(previewParams.get('rooms'), '2')
+assert.equal(previewParams.get('name'), '测试访客')
+assert.equal(previewParams.has('voucherNo'), false)
 assert.equal(page.data.name, '测试访客')
 page.input(inputEvent('notes', '需要安静房间'))
 assert.equal(page.data.reviewConfirmed, false)
@@ -120,4 +129,4 @@ assert(wxml.includes('maxlength="500"'))
 for (const [, handler] of wxml.matchAll(/(?:bind\w+|catch\w+)="(\w+)"/g)) assert.equal(typeof page[handler], 'function', handler)
 const luminance = hex => hex.match(/\w\w/g).map(v => parseInt(v, 16) / 255).map(v => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4).reduce((sum, v, i) => sum + v * [.2126, .7152, .0722][i], 0)
 for (const background of ['ffffff', 'f0f8fc', 'edf7ff']) assert((luminance(background) + .05) / (luminance('606b7d') + .05) >= 4.5)
-console.log('PASS: 日期资格与跨午夜、容量与必填拦截、核对返回与未提交终态、输入保留、事件绑定与灰字对比度')
+console.log('PASS: 日期资格与跨午夜、容量与必填拦截、核对后进入预览、输入保留、事件绑定与灰字对比度')

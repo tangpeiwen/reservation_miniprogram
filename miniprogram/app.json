@@ -1,5 +1,8 @@
 {
-  "pages": ["pages/reservation/index"],
+  "pages": [
+    "pages/reservation/index",
+    "pages/confirmation/index"
+  ],
   "window": {
     "navigationBarTitleText": "入住预约",
     "navigationBarBackgroundColor": "#f0f8fc",

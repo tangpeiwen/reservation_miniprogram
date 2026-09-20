@@ -122,6 +122,15 @@ Page({
   closeReview() { this.setData({ reviewVisible: false }) },
   confirmReview() {
     this.setData({ reviewVisible: false, reviewConfirmed: true })
+    const { date, nights, guests, rooms, name } = this.data
+    const query = [
+      ['date', date],
+      ['nights', nights],
+      ['guests', guests],
+      ['rooms', rooms],
+      ['name', name]
+    ].map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&')
+    wx.navigateTo({ url: `/pages/confirmation/index?${query}` })
   },
   noop() {}
 })
