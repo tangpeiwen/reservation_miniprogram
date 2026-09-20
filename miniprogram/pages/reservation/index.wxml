@@ -11,9 +11,12 @@
     <text class="section-title">入住安排</text>
     <view class="row">
       <text class="label">入住日期</text>
-      <button class="control date-trigger" bindtap="openCalendar" aria-label="选择入住日期">
-        <view class="date-field"><text class="{{dateConfirmed ? '' : 'date-default'}}">{{dateLabel}}</text><view class="calendar"><view class="calendar-line" /></view></view>
-      </button>
+      <view class="control">
+        <button class="date-trigger" bindtap="openCalendar" aria-label="选择入住日期">
+          <view class="date-field {{dateError ? 'field-invalid' : ''}}"><text class="{{dateConfirmed ? '' : 'date-default'}}">{{dateLabel}}</text><view class="calendar"><view class="calendar-line" /></view></view>
+        </button>
+        <text wx:if="{{dateError}}" class="error-text">{{dateError}}</text>
+      </view>
     </view>
     <view class="row nights-row">
       <text class="label">入住晚数</text>
@@ -34,13 +37,27 @@
       <view class="stepper"><button disabled="{{rooms <= 1}}" data-field="rooms" data-delta="-1" bindtap="step" aria-label="减少房间数量">−</button><text>{{rooms}}</text><button data-field="rooms" data-delta="1" bindtap="step" aria-label="增加房间数量">＋</button></view>
     </view>
     <text class="room-note">双人房，每间最多入住 2 人。</text>
+    <text wx:if="{{capacityError}}" class="error-text capacity-error">{{capacityError}}</text>
   </view>
   <view class="card contact-card">
     <text class="section-title">联系信息</text>
-    <view class="row"><text class="label">名字</text><input class="field control" value="{{name}}" data-field="name" bindinput="input" placeholder="请输入你的名字" placeholder-class="placeholder" placeholder-style="font-family: LemiMilkFoam, sans-serif; font-size: 24rpx; font-weight: normal; color: #606b7d;" maxlength="40" /></view>
-    <view class="row"><text class="label">微信号</text><input class="field control" value="{{wechat}}" data-field="wechat" bindinput="input" placeholder="用于工作人员联系确认" placeholder-class="placeholder" placeholder-style="font-family: LemiMilkFoam, sans-serif; font-size: 24rpx; font-weight: normal; color: #606b7d;" maxlength="80" /></view>
+    <view class="row form-row">
+      <text class="label">名字<text class="required">＊</text></text>
+      <view class="control form-control">
+        <input class="field {{nameError ? 'field-invalid' : ''}}" value="{{name}}" data-field="name" bindinput="input" focus="{{focusField === 'name'}}" aria-label="名字，必填" placeholder="请输入你的名字" placeholder-class="placeholder" placeholder-style="font-family: LemiMilkFoam, sans-serif; font-size: 24rpx; font-weight: normal; color: #606b7d;" maxlength="40" />
+        <text wx:if="{{nameError}}" class="error-text">{{nameError}}</text>
+      </view>
+    </view>
+    <view class="row form-row">
+      <text class="label">微信号<text class="required">＊</text></text>
+      <view class="control form-control">
+        <input class="field {{wechatError ? 'field-invalid' : ''}}" value="{{wechat}}" data-field="wechat" bindinput="input" focus="{{focusField === 'wechat'}}" aria-label="微信号，必填" placeholder="用于工作人员联系确认" placeholder-class="placeholder" placeholder-style="font-family: LemiMilkFoam, sans-serif; font-size: 24rpx; font-weight: normal; color: #606b7d;" maxlength="80" />
+        <text wx:if="{{wechatError}}" class="error-text">{{wechatError}}</text>
+      </view>
+    </view>
     <view class="row notes-row"><text class="label">备注<text class="optional">（选填）</text></text><textarea wx:if="{{!reviewVisible && !calendarVisible}}" class="field control notes" value="{{notes}}" data-field="notes" bindinput="input" placeholder="其他入住需求" placeholder-class="placeholder" placeholder-style="font-family: LemiMilkFoam, sans-serif; font-size: 24rpx; font-weight: normal; color: #606b7d;" maxlength="500" adjust-position="{{true}}" /><view wx:else class="field control notes">{{notes}}</view></view>
     <button class="primary" bindtap="openReview">核对预约信息</button>
+    <view wx:if="{{reviewConfirmed}}" class="confirmation-note" role="status">信息已核对，尚未提交预约</view>
     <view class="footnote">提交后由工作人员通过微信确认<view>提交申请不代表订房成功</view></view>
   </view>
   <text class="demo-note">界面预览 · 本页不会提交预约</text>
@@ -56,8 +73,11 @@
       <view class="review-row"><text>微信号</text><text>{{wechat || '未填写'}}</text></view>
       <view class="review-row"><text>备注</text><text>{{notes || '无'}}</text></view>
     </scroll-view>
-    <view class="review-notice">当前为前端预览，信息不会保存或提交。</view>
-    <button class="primary" bindtap="closeReview">返回修改</button>
+    <view class="review-notice">确认仅用于前端流程演示，信息不会保存或提交。</view>
+    <view class="review-actions">
+      <button class="secondary" bindtap="closeReview">返回修改</button>
+      <button class="primary" bindtap="confirmReview">确认信息</button>
+    </view>
   </view>
 </view>
 
@@ -67,10 +87,11 @@
     <view class="month-nav"><button data-delta="-1" bindtap="changeMonth" aria-label="上个月">‹</button><text>{{calendarYear}}年{{calendarMonth}}月</text><button data-delta="1" bindtap="changeMonth" aria-label="下个月">›</button></view>
     <scroll-view scroll-y class="calendar-body"><view class="calendar-grid weekdays"><text wx:for="{{weekdays}}" wx:key="*this">{{item}}</text></view>
     <view class="calendar-grid days">
-      <view wx:for="{{calendarDays}}" wx:key="key" class="day-cell"><button wx:if="{{item.day}}" class="day {{item.value === pendingDate ? 'day-selected' : ''}}" data-date="{{item.value}}" bindtap="selectDay" aria-label="{{item.value}}">{{item.day}}</button></view>
+      <view wx:for="{{calendarDays}}" wx:key="key" class="day-cell"><button wx:if="{{item.day}}" class="day {{item.value === pendingDate ? 'day-selected' : ''}} {{item.disabled ? 'day-disabled' : ''}}" disabled="{{item.disabled}}" data-date="{{item.value}}" bindtap="selectDay" aria-label="{{item.value}}{{item.disabled ? '，不可选' : ''}}">{{item.day}}</button></view>
     </view>
     </scroll-view>
     <view class="calendar-selection">已选：{{pendingDateLabel}}（翻月不改变选择）</view>
+    <text wx:if="{{dateError}}" class="error-text calendar-error">{{dateError}}</text>
     <button class="primary" bindtap="confirmDate">确认</button>
   </view>
 </view>
