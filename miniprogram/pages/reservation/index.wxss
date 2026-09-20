@@ -6,9 +6,9 @@
 .underline { position: relative; overflow: hidden; width: 252rpx; height: 24rpx; margin-top: 2rpx; }
 .underline-source { position: absolute; width: 750rpx; height: 1584rpx; left: -59rpx; top: -283rpx; }
 .cat { position: absolute; right: -4rpx; top: 8rpx; width: 310rpx; height: 310rpx; }
-.card { background: rgba(255,255,255,.94); border: 2rpx solid #d7e2eb; border-radius: 24rpx; padding: 32rpx 28rpx; margin-bottom: 22rpx; }
+.card { background: rgba(255,255,255,.94); border: 2rpx solid #d7e2eb; border-radius: 24rpx; padding: 24rpx 28rpx; margin-bottom: 16rpx; }
 .section-title { display: block; font-size: 38rpx; line-height: 1.25; font-weight: 700; margin-bottom: 8rpx; }
-.row { display: flex; align-items: center; margin-top: 24rpx; gap: 16rpx; }
+.row { display: flex; align-items: center; margin-top: 16rpx; gap: 16rpx; }
 .section-title + .row { margin-top: 14rpx; }
 .label { width: 136rpx; flex-shrink: 0; font-size: 28rpx; line-height: 1.35; }
 .control { flex: 1; min-width: 0; }
@@ -21,14 +21,14 @@
 .calendar-line { border-top: 3rpx solid #7791ab; margin-top: 7rpx; }
 .nights-row { align-items: flex-start; } .nights-row > .label { padding-top: 22rpx; }
 .night-options { display: flex; gap: 12rpx; }
-.night { flex: 1; min-width: 0; height: 84rpx; line-height: 80rpx; background: #fff; border: 2rpx solid #d5e0eb; font-size: 30rpx; }
+.night { flex: 1; width: 0; min-width: 0; margin: 0; padding: 0; height: 84rpx; line-height: 80rpx; background: #fff; border: 2rpx solid #d5e0eb; font-size: 30rpx; }
 .night.selected { border-color: #a4c9ec; background: #c2dff7; color: rgba(64, 44, 37, .82); }
-.stay-summary { display: flex; align-items: center; justify-content: center; min-height: 74rpx; background: #edf7ff; border-radius: 12rpx; padding: 13rpx 14rpx; color: rgba(64, 44, 37, .76); font-size: 27rpx; line-height: 1.45; text-align: center; margin-top: 14rpx; }
+.stay-summary { display: flex; align-items: center; justify-content: center; min-height: 60rpx; background: #edf7ff; border-radius: 12rpx; padding: 8rpx 12rpx; color: rgba(64, 44, 37, .76); font-size: 27rpx; line-height: 1.35; text-align: center; margin-top: 8rpx; }
 .stepper { display: flex; height: 46px; border: 2rpx solid #d5e0eb; border-radius: 12rpx; overflow: hidden; }
 .page .stepper button { background: #fff; flex: 0 0 44px; width: 44px; height: 44px; margin: 0; padding: 0; line-height: 44px; color: #7791ab; font-size: 42rpx; border-radius: 0; }
 .stepper button[disabled] { color: #bdcbd7; background: #f8fafc; }
 .stepper text { width: 88rpx; text-align: center; line-height: 44px; border-left: 2rpx solid #d5e0eb; border-right: 2rpx solid #d5e0eb; font-size: 30rpx; font-variant-numeric: tabular-nums; }
-.room-note { display: block; margin: 14rpx 0 0 152rpx; font-size: 23rpx; line-height: 1.45; color: #606b7d; }
+.room-note { display: block; margin: 8rpx 0 0 152rpx; font-size: 23rpx; line-height: 1.45; color: #606b7d; }
 .capacity-error { margin-left: 152rpx; }
 .placeholder { color: #606b7d; font-family: "LemiMilkFoam", sans-serif; font-size: 24rpx; font-weight: normal; }
 .form-row { align-items: flex-start; }
@@ -36,9 +36,10 @@
 .required { margin-left: 4rpx; color: #b85c52; }
 .form-control .field { width: 100%; }
 .field-invalid { border-color: #b85c52; }
-.error-text { display: block; margin: 8rpx 0 0 4rpx; color: #9f433b; font-size: 24rpx; line-height: 1.4; }
+.error-text { display: block; margin: 8rpx 0 0; color: #9f433b; font-size: 24rpx; line-height: 1.4; }
+.error-text.capacity-error { margin-left: 152rpx; }
 .notes-row { align-items: flex-start; } .notes-row .label { padding-top: 18rpx; }
-.optional { font-size: 23rpx; }
+.optional { display: block; font-size: 23rpx; line-height: 1.35; }
 .notes { height: 126rpx; padding-top: 16rpx; line-height: 1.55; }
 .primary { background: #b6d8f5; color: rgba(64, 44, 37, .88); font-size: 30rpx; font-weight: 700; height: 88rpx; line-height: 88rpx; border-radius: 14rpx; margin-top: 24rpx; }
 .primary:active, .night:active { opacity: .8; }
@@ -61,7 +62,8 @@
 .review-actions .secondary { background: #fff; border: 2rpx solid #b6d8f5; color: #402c25; }
 .review-actions .primary { margin: 0; }
 
-.date-trigger { width: 100%; background: transparent; text-align: left; line-height: normal; }
+.page button.date-trigger { display: block; width: 100%; min-width: 0; margin: 0; padding: 0; border: 0; background: transparent; text-align: left; line-height: normal; }
+.page button.date-trigger::after { border: 0; }
 .month-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18rpx; font-size: 30rpx; font-weight: 700; font-variant-numeric: tabular-nums; }
 .sheet .month-nav button { flex: 0 0 44px; width: 44px; min-width: 0; height: 44px; margin: 0; padding: 0; line-height: 44px; background: #f0f6fa; color: #7791ab; font-size: 40rpx; border-radius: 8rpx; }
 .calendar-grid { display: flex; flex-wrap: wrap; }
@@ -86,12 +88,12 @@
   .hero-title { font-size: 60rpx; }
   .underline { width: 230rpx; }
   .cat { width: 280rpx; height: 280rpx; right: -16rpx; }
-  .card { padding: 26rpx 20rpx; }
+  .card { padding: 24rpx 20rpx; }
   .section-title { font-size: 36rpx; }
   .row { gap: 12rpx; }
   .label { width: 124rpx; font-size: 27rpx; }
   .date-field, .field { padding-left: 14rpx; padding-right: 14rpx; font-size: 28rpx; }
   .night { font-size: 29rpx; }
   .room-note { margin-left: 136rpx; }
-  .capacity-error { margin-left: 136rpx; }
+  .error-text.capacity-error { margin-left: 136rpx; }
 }
