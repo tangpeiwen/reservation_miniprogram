@@ -1,4 +1,3 @@
-// 本轮仅使用页面内存展示 UI，不调用后端或写入本地存储。
 const DAY_MS = 24 * 60 * 60 * 1000
 
 function beijingToday() {
@@ -37,7 +36,7 @@ function monthInfo(year, month) {
 Page({
   data: {
     date: '', dateConfirmed: false, nights: 2, guests: 2, rooms: 1,
-    name: '', wechat: '', notes: '', reviewVisible: false, reviewConfirmed: false,
+    name: '', wechat: '', notes: '', reviewVisible: false, reviewConfirmed: false, submitting: false, submitError: '',
     dateError: '', capacityError: '', nameError: '', wechatError: '', focusField: '',
     calendarVisible: false, pendingDate: '', pendingDateLabel: '', calendarDays: [],
     weekdays: ['日', '一', '二', '三', '四', '五', '六'],
@@ -86,7 +85,7 @@ Page({
   input(event) {
     const field = event.currentTarget.dataset.field
     const value = event.detail.value
-    const patch = { [field]: value, reviewConfirmed: false }
+    const patch = { [field]: value, reviewConfirmed: false, submitError: '' }
     if ((field === 'name' || field === 'wechat') && value.trim()) {
       patch[`${field}Error`] = ''
       patch.focusField = ''
@@ -120,17 +119,47 @@ Page({
     this.setData({ name, wechat, dateError: '', capacityError: '', nameError: '', wechatError: '', focusField: '', reviewVisible: true })
   },
   closeReview() { this.setData({ reviewVisible: false }) },
-  confirmReview() {
-    this.setData({ reviewVisible: false, reviewConfirmed: true })
-    const { date, nights, guests, rooms, name } = this.data
-    const query = [
-      ['date', date],
-      ['nights', nights],
-      ['guests', guests],
-      ['rooms', rooms],
-      ['name', name]
-    ].map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&')
-    wx.navigateTo({ url: `/pages/confirmation/index?${query}` })
+  async confirmReview() {
+    if (this.data.submitting) return
+    this.setData({ submitting: true, submitError: '' })
+    const { date, nights, guests, rooms, name, wechat, notes } = this.data
+    try {
+      const response = await wx.cloud.callFunction({
+        name: 'submitReservation',
+        data: {
+          checkInDate: date,
+          nights,
+          guestCount: guests,
+          roomCount: rooms,
+          name,
+          wechatId: wechat,
+          notes
+        }
+      })
+      const result = response && response.result
+      if (!result || !result.ok || !result.reservation) {
+        throw new Error(result && result.error && result.error.message || '预约提交失败，请稍后重试')
+      }
+      const reservation = result.reservation
+      const query = [
+        ['reservationNumber', reservation.reservationNumber],
+        ['createdAt', reservation.createdAt],
+        ['checkInDate', reservation.checkInDate],
+        ['checkOutDate', reservation.checkOutDate],
+        ['nights', reservation.nights],
+        ['guestCount', reservation.guestCount],
+        ['roomCount', reservation.roomCount],
+        ['name', reservation.name],
+        ['discountAmountCents', reservation.discountAmountCents],
+        ['status', reservation.status]
+      ].map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&')
+      this.setData({ reviewVisible: false, reviewConfirmed: true, submitting: false })
+      wx.navigateTo({ url: `/pages/confirmation/index?${query}` })
+    } catch (error) {
+      const submitError = error && error.message || '预约提交失败，请稍后重试'
+      this.setData({ reviewVisible: false, reviewConfirmed: false, submitting: false, submitError })
+      if (wx.showToast) wx.showToast({ title: '提交失败，请检查后重试', icon: 'none' })
+    }
   },
   noop() {}
 })

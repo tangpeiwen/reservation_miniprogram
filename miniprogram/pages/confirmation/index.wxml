@@ -2,17 +2,17 @@
   <view class="status-block">
     <view class="status-copy">
       <view class="status-mark" aria-hidden="true"><view class="status-check" /></view>
-      <text class="status-title">凭证预览</text>
-      <text class="status-description">请核对信息，可截图或保存</text>
-      <text class="status-badge">尚未提交</text>
+      <text class="status-title">预约凭证</text>
+      <text class="status-description">预约申请已提交，尚未确认订房</text>
+      <text class="status-badge">申请已提交</text>
     </view>
     <image class="chick" src="/assets/chick.png" mode="aspectFit" aria-hidden="true" />
   </view>
 
   <view class="voucher" aria-label="预约凭证">
     <view class="voucher-heading">
-      <text class="voucher-title">预约凭证预览</text>
-      <text class="voucher-number">{{voucherNo}}</text>
+      <text class="voucher-title">预约申请凭证</text>
+      <text class="voucher-number">预约编号 {{reservationNumber}}</text>
     </view>
 
     <view class="date-range">
@@ -28,17 +28,17 @@
     </view>
 
     <view class="guest-row"><text class="row-label">预约人</text><text class="row-value">{{name}}</text></view>
+    <view class="guest-row created-row"><text class="row-label">提交时间</text><text class="row-value">{{createdAtLabel}}</text></view>
 
     <view class="benefit-row">
       <view class="benefit-copy"><text class="benefit-label">社群专属</text><text class="benefit-note">使用方式以工作人员确认为准</text></view>
-      <text class="benefit-value">¥100 入住优惠</text>
+      <text class="benefit-value">{{discountLabel}} 入住优惠</text>
     </view>
   </view>
 
-  <view class="status-note">当前信息尚未提交或保存</view>
-  <button class="save-button {{saving ? 'saving' : ''}}" bindtap="saveVoucher" disabled="{{saving}}">{{saving ? '正在生成…' : '保存预览凭证'}}</button>
+  <view class="status-note">预约申请已提交，尚未确认订房。工作人员将通过微信与你确认。</view>
+  <button class="save-button {{saving ? 'saving' : ''}}" bindtap="saveVoucher" disabled="{{saving}}">{{saving ? '正在生成…' : '保存预约凭证'}}</button>
   <text class="screenshot-hint">也可以直接截图保存</text>
-  <text class="demo-note">凭证预览 · 当前信息不会保存或提交</text>
 
   <canvas type="2d" id="voucherCanvas" class="export-canvas" />
 </view>

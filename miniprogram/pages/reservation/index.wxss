@@ -4,7 +4,7 @@
 .brand { display: block; font-size: 29rpx; line-height: 1.4; font-weight: 700; }
 .hero-title { display: block; font-size: 68rpx; line-height: 1.12; font-weight: 800; letter-spacing: 1rpx; margin-top: 6rpx; }
 .underline { position: relative; overflow: hidden; width: 252rpx; height: 24rpx; margin-top: 2rpx; }
-.underline-source { position: absolute; width: 750rpx; height: 1584rpx; left: -59rpx; top: -283rpx; }
+.underline-source { width: 252rpx; height: 24rpx; }
 .cat { position: absolute; right: -4rpx; top: 8rpx; width: 310rpx; height: 310rpx; }
 .card { background: rgba(255,255,255,.94); border: 2rpx solid #d7e2eb; border-radius: 24rpx; padding: 24rpx 28rpx; margin-bottom: 16rpx; }
 .section-title { display: block; font-size: 38rpx; line-height: 1.25; font-weight: 700; margin-bottom: 8rpx; }
@@ -45,6 +45,7 @@
 .primary:active, .night:active { opacity: .8; }
 .footnote { text-align: center; font-size: 23rpx; line-height: 1.55; color: #606b7d; margin-top: 12rpx; }
 .confirmation-note { margin-top: 16rpx; padding: 16rpx 18rpx; border-radius: 12rpx; background: #edf7ff; color: #4e6175; font-size: 25rpx; line-height: 1.5; text-align: center; }
+.confirmation-note.submit-error { background: #fff1ef; color: #8d3f38; }
 .demo-note { display: block; text-align: center; color: #606b7d; font-size: 21rpx; line-height: 1.45; margin-top: 4rpx; }
 .overlay { position: fixed; z-index: 10; inset: 0; background: rgba(41,37,35,.35); display: flex; align-items: flex-end; }
 .sheet { background: #fff; border-radius: 28rpx 28rpx 0 0; padding: 32rpx 30rpx; padding-bottom: calc(32rpx + env(safe-area-inset-bottom)); width: 100%; }
@@ -61,6 +62,7 @@
 .review-actions button { flex: 1; min-width: 0; height: 88rpx; margin: 0; line-height: 84rpx; border-radius: 14rpx; font-size: 29rpx; }
 .review-actions .secondary { background: #fff; border: 2rpx solid #b6d8f5; color: #402c25; }
 .review-actions .primary { margin: 0; }
+.review-actions button[disabled] { opacity: .65; }
 
 .page button.date-trigger { display: block; width: 100%; min-width: 0; margin: 0; padding: 0; border: 0; background: transparent; text-align: left; line-height: normal; }
 .page button.date-trigger::after { border: 0; }

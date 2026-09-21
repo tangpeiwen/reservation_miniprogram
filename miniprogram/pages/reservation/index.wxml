@@ -3,9 +3,9 @@
     <view class="hero-copy">
       <text class="brand">NE群 × 阿育吠陀</text>
       <text class="hero-title">体验预约</text>
-      <view class="underline" aria-hidden="true"><image src="/assets/concept.png" class="underline-source" /></view>
+      <view class="underline" aria-hidden="true"><image src="/assets/wave.png" class="underline-source" /></view>
     </view>
-    <image src="/assets/cat.png" class="cat" mode="aspectFit" aria-hidden="true" />
+    <image src="/assets/cat-display.png" class="cat" mode="aspectFit" aria-hidden="true" />
   </view>
   <view class="card">
     <text class="section-title">入住安排</text>
@@ -57,10 +57,11 @@
     </view>
     <view class="row notes-row"><text class="label">备注<text class="optional">（选填）</text></text><textarea wx:if="{{!reviewVisible && !calendarVisible}}" class="field control notes" value="{{notes}}" data-field="notes" bindinput="input" placeholder="其他入住需求" placeholder-class="placeholder" placeholder-style="font-family: LemiMilkFoam, sans-serif; font-size: 24rpx; font-weight: normal; color: #606b7d;" maxlength="500" adjust-position="{{true}}" /><view wx:else class="field control notes">{{notes}}</view></view>
     <button class="primary" bindtap="openReview">核对预约信息</button>
+    <view wx:if="{{submitError}}" class="confirmation-note submit-error" role="alert">{{submitError}}</view>
     <view wx:if="{{reviewConfirmed}}" class="confirmation-note" role="status">信息已核对，尚未提交预约</view>
     <view class="footnote">提交后由工作人员通过微信确认<view>提交申请不代表订房成功</view></view>
   </view>
-  <text class="demo-note">界面预览 · 本页不会提交预约</text>
+  <text class="demo-note">预约申请提交后，仍需工作人员确认订房</text>
 </view>
 <view wx:if="{{reviewVisible}}" class="overlay" catchtouchmove="noop" bindtap="closeReview">
   <view class="sheet" catchtap="noop" role="dialog" aria-label="核对预约信息">
@@ -73,10 +74,10 @@
       <view class="review-row"><text>微信号</text><text>{{wechat || '未填写'}}</text></view>
       <view class="review-row"><text>备注</text><text>{{notes || '无'}}</text></view>
     </scroll-view>
-    <view class="review-notice">确认仅用于前端流程演示，信息不会保存或提交。</view>
+    <view class="review-notice">确认后将提交预约申请，保存成功才会生成正式凭证。</view>
     <view class="review-actions">
-      <button class="secondary" bindtap="closeReview">返回修改</button>
-      <button class="primary" bindtap="confirmReview">确认信息</button>
+      <button class="secondary" bindtap="closeReview" disabled="{{submitting}}">返回修改</button>
+      <button class="primary" bindtap="confirmReview" disabled="{{submitting}}">{{submitting ? '正在提交…' : '确认并提交'}}</button>
     </view>
   </view>
 </view>

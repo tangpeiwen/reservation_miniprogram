@@ -87,7 +87,8 @@ MVP 包含：
 
 | 字段 | 用途 |
 | --- | --- |
-| `_id` | 唯一预约 ID，同时作为预约编号，不维护额外递增序号 |
+| `_id` | 数据库内部唯一主键，不直接展示给用户 |
+| `reservationNumber` | 服务端生成的用户可读预约编号，建立唯一索引 |
 | `createdAt` | 服务端创建时间 |
 | `checkInDate` | 入住日期 |
 | `checkOutDate` | 服务端计算的离店日期 |
@@ -98,7 +99,7 @@ MVP 包含：
 | `wechatId` | 用户填写的微信号 |
 | `notes` | 可选备注 |
 | `status` | `submitted` |
-| `discountAmount` | 优惠金额，单位分，固定 `10000` |
+| `discountAmountCents` | 优惠金额，单位分，固定 `10000`（即 ¥100） |
 
 ### 可靠性字段
 

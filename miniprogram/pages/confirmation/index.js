@@ -8,12 +8,6 @@ function dateParts(value) {
   return { year, month, day }
 }
 
-function addDays(value, count) {
-  const { year, month, day } = dateParts(value)
-  const result = new Date(year, month - 1, day + count)
-  return [result.getFullYear(), String(result.getMonth() + 1).padStart(2, '0'), String(result.getDate()).padStart(2, '0')].join('-')
-}
-
 function shortDate(value) {
   const { month, day } = dateParts(value)
   return `${month}月${day}日`
@@ -21,6 +15,16 @@ function shortDate(value) {
 
 function fitText(value, limit) {
   return value.length > limit ? `${value.slice(0, limit - 1)}…` : value
+}
+
+function createdAtLabel(value) {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  const beijing = new Date(date.getTime() + 8 * 60 * 60 * 1000)
+  return [
+    `${beijing.getUTCFullYear()}-${String(beijing.getUTCMonth() + 1).padStart(2, '0')}-${String(beijing.getUTCDate()).padStart(2, '0')}`,
+    `${String(beijing.getUTCHours()).padStart(2, '0')}:${String(beijing.getUTCMinutes()).padStart(2, '0')}`
+  ].join(' ')
 }
 
 function roundRect(ctx, x, y, width, height, radius) {
@@ -35,27 +39,27 @@ function roundRect(ctx, x, y, width, height, radius) {
 
 Page({
   data: {
-    voucherNo: '', checkInYear: '', checkOutYear: '', checkInShort: '', checkOutShort: '', nights: 2, guests: 2, rooms: 1,
-    name: '', saving: false
+    reservationNumber: '', createdAtLabel: '', checkInYear: '', checkOutYear: '', checkInShort: '', checkOutShort: '', nights: 2, guests: 2, rooms: 1,
+    name: '', discountLabel: '', saving: false
   },
   onLoad(options) {
-    const today = new Date(Date.now() + 8 * 60 * 60 * 1000)
-    const fallbackDate = [today.getUTCFullYear(), String(today.getUTCMonth() + 1).padStart(2, '0'), String(today.getUTCDate()).padStart(2, '0')].join('-')
-    const date = decode(options.date, fallbackDate)
-    const nights = Math.max(1, Number(options.nights) || 2)
-    const checkout = addDays(date, nights)
+    const date = decode(options.checkInDate)
+    const checkout = decode(options.checkOutDate)
+    const nights = Number(options.nights)
     const checkIn = dateParts(date)
     const checkOut = dateParts(checkout)
     this.setData({
-      voucherNo: '未生成编号',
+      reservationNumber: decode(options.reservationNumber),
+      createdAtLabel: createdAtLabel(decode(options.createdAt)),
       checkInYear: checkIn.year,
       checkOutYear: checkOut.year,
       checkInShort: shortDate(date),
       checkOutShort: shortDate(checkout),
       nights,
-      guests: Math.max(1, Number(options.guests) || 2),
-      rooms: Math.max(1, Number(options.rooms) || 1),
-      name: decode(options.name, '访客')
+      guests: Number(options.guestCount),
+      rooms: Number(options.roomCount),
+      name: decode(options.name),
+      discountLabel: `¥${Number(options.discountAmountCents) / 100}`
     })
   },
   saveVoucher() {
@@ -99,10 +103,10 @@ Page({
 
     ctx.fillStyle = brown
     ctx.font = '700 27px LemiMilkFoam, sans-serif'
-    ctx.fillText('凭证预览', 24, 50)
+    ctx.fillText('预约凭证', 24, 50)
     ctx.fillStyle = '#2e658f'
     ctx.font = '16px LemiMilkFoam, sans-serif'
-    ctx.fillText('尚未提交', 25, 78)
+    ctx.fillText('申请已提交', 25, 78)
 
     ctx.fillStyle = '#ffffff'
     roundRect(ctx, 14, 104, width - 28, 370, 14)
@@ -110,11 +114,11 @@ Page({
 
     ctx.fillStyle = brown
     ctx.font = '700 21px LemiMilkFoam, sans-serif'
-    ctx.fillText('预约凭证预览', 32, 143)
+    ctx.fillText('预约申请凭证', 32, 143)
     ctx.fillStyle = muted
     ctx.font = '12px LemiMilkFoam, sans-serif'
     ctx.textAlign = 'right'
-    ctx.fillText(fitText(this.data.voucherNo, 22), width - 32, 143)
+    ctx.fillText(`预约编号 ${fitText(this.data.reservationNumber, 18)}`, width - 32, 143)
     ctx.textAlign = 'left'
 
     ctx.strokeStyle = '#e1eaf1'
@@ -147,10 +151,12 @@ Page({
     ctx.fillStyle = '#695f59'; ctx.font = '10px LemiMilkFoam, sans-serif'
     ctx.fillText('使用方式以工作人员确认为准', 46, 420)
     ctx.textAlign = 'right'; ctx.fillStyle = '#a84b24'; ctx.font = '700 16px LemiMilkFoam, sans-serif'
-    ctx.fillText('¥100 入住优惠', width - 46, 412)
+    ctx.fillText(`${this.data.discountLabel} 入住优惠`, width - 46, 412)
 
     ctx.textAlign = 'center'; ctx.fillStyle = muted; ctx.font = '13px LemiMilkFoam, sans-serif'
-    ctx.fillText('当前信息尚未提交或保存', width / 2, 463)
+    ctx.fillText('预约申请已提交，尚未确认订房', width / 2, 456)
+    ctx.font = '11px LemiMilkFoam, sans-serif'
+    ctx.fillText(`提交时间 ${this.data.createdAtLabel}`, width / 2, 474)
 
     ctx.fillStyle = brown; ctx.font = '700 16px LemiMilkFoam, sans-serif'
     ctx.fillText('NE群 × 阿育吠陀体验预约', width / 2, 526)

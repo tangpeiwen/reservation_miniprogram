@@ -23,6 +23,7 @@
 .stay-facts { display: flex; align-items: center; justify-content: center; gap: 18rpx; min-height: 82rpx; color: #3f5265; font-size: 28rpx; font-variant-numeric: tabular-nums; }
 .fact-dot { width: 5rpx; height: 5rpx; border-radius: 50%; background: #8da8bf; }
 .guest-row { display: flex; justify-content: space-between; gap: 24rpx; padding: 22rpx 4rpx 0; border-top: 1rpx solid #e4ebf1; font-size: 28rpx; line-height: 1.4; }
+.created-row { margin-top: 22rpx; font-size: 24rpx; }
 .row-label { flex-shrink: 0; color: #667487; }
 .row-value { text-align: right; overflow-wrap: anywhere; }
 .benefit-row { display: flex; align-items: center; justify-content: space-between; gap: 18rpx; min-height: 88rpx; margin-top: 24rpx; padding: 15rpx 18rpx; border-radius: 13rpx; background: #fff5ea; }

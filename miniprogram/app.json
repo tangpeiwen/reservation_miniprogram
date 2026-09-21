@@ -9,5 +9,14 @@
     "navigationBarTextStyle": "black",
     "backgroundColor": "#f0f8fc"
   },
-  "style": "v2"
+  "style": "v2",
+  "agent": {
+    "skills": [
+      {
+        "name": "wechatide",
+        "path": "agent-skills/wechatide",
+        "description": "微信开发者工具的小程序项目验证能力"
+      }
+    ]
+  }
 }

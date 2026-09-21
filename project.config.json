@@ -1,6 +1,7 @@
 {
   "description": "阿育吠陀入住预约 UI",
   "miniprogramRoot": "miniprogram/",
+  "cloudfunctionRoot": "cloudfunctions/",
   "compileType": "miniprogram",
   "appid": "wx15ddad91ddff0ece",
   "projectname": "stay-reservation",
@@ -8,6 +9,13 @@
     "es6": true,
     "minified": true,
     "minifyWXML": true
+  },
+  "packOptions": {
+    "ignore": [
+      { "type": "file", "value": "assets/cat.png" },
+      { "type": "file", "value": "assets/concept.png" }
+    ],
+    "include": []
   },
   "isGameTourist": false
 }
