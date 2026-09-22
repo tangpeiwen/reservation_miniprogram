@@ -43,9 +43,26 @@ Page({
     dateLabel: '', stayLabel: ''
   },
   onLoad() {
+    if (wx.showShareMenu) {
+      wx.showShareMenu({ menus: ['shareAppMessage', 'shareTimeline'] })
+    }
     // 以北京时间当天初始化；返回弹层不重置用户已选日期。
     const date = beijingToday()
     this.setData({ date, ...dateInfo(date, this.data.nights) })
+  },
+  onShareAppMessage() {
+    return {
+      title: 'NE群 × 阿育吠陀体验预约',
+      path: '/pages/reservation/index',
+      imageUrl: '/assets/cat-display.png'
+    }
+  },
+  onShareTimeline() {
+    return {
+      title: 'NE群 × 阿育吠陀体验预约',
+      query: '',
+      imageUrl: '/assets/cat-display.png'
+    }
   },
   openCalendar() {
     const [year, month] = this.data.date.split('-').map(Number)
@@ -88,9 +105,13 @@ Page({
     const patch = { [field]: value, reviewConfirmed: false, submitError: '' }
     if ((field === 'name' || field === 'wechat') && value.trim()) {
       patch[`${field}Error`] = ''
-      patch.focusField = ''
     }
     this.setData(patch)
+  },
+  blurInput(event) {
+    if (this.data.focusField === event.currentTarget.dataset.field) {
+      this.setData({ focusField: '' })
+    }
   },
   openReview() {
     const dateError = this.data.dateConfirmed && isFutureDate(this.data.date) ? '' : '请选择明天或之后的日期'

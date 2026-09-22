@@ -1,5 +1,6 @@
 const cloud = require('wx-server-sdk')
 const crypto = require('crypto')
+const { Resend } = require('resend')
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 
@@ -90,26 +91,114 @@ function reservationFrom(event) {
   }
 }
 
-exports.main = async event => {
+function notificationText(reservation) {
+  return [
+    '新预约待处理',
+    '状态：待人工联系确认',
+    `预约编号：${reservation.reservationNumber}`,
+    `入住日期：${reservation.checkInDate}`,
+    `离店日期：${reservation.checkOutDate}`,
+    `入住晚数：${reservation.nights}`,
+    `人数：${reservation.guestCount}`,
+    `房间数：${reservation.roomCount}`,
+    `姓名：${reservation.name}`,
+    `微信号：${reservation.wechatId}`,
+    `备注：${reservation.notes || '无'}`
+  ].join('\n')
+}
+
+function safeNotificationError(error) {
+  const code = error && typeof error.code === 'string'
+    ? error.code
+    : error && typeof error.name === 'string'
+      ? error.name
+      : error && error.statusCode
+        ? `HTTP_${error.statusCode}`
+        : 'UNKNOWN'
+  const message = error && error.message ? String(error.message) : '邮件发送失败'
+  return `${code}: ${message}`
+    .slice(0, 300)
+}
+
+async function sendNotification(reservation) {
+  const apiKey = process.env.RESEND_API_KEY
+  const adminEmail = process.env.RESERVATION_ADMIN_EMAIL
+  const fromEmail = process.env.RESEND_FROM_EMAIL
+  if (!apiKey || !adminEmail || !fromEmail) {
+    return { status: 'failed', error: 'CONFIG_MISSING: Resend 邮件通知环境变量未配置' }
+  }
+
   try {
-    const reservation = reservationFrom(event)
-    const createdAt = new Date()
+    const resend = new Resend(apiKey)
+    const result = await resend.emails.send({
+      from: fromEmail,
+      to: [adminEmail],
+      subject: `新预约待处理 ${reservation.reservationNumber}`,
+      text: notificationText(reservation)
+    })
+    if (result && result.error) return { status: 'failed', error: safeNotificationError(result.error) }
+    return { status: 'sent', error: '' }
+  } catch (error) {
+    return { status: 'failed', error: safeNotificationError(error) }
+  }
+}
+
+exports.main = async event => {
+  let reservation
+  let createdAt
+  let reservationId
+  try {
+    reservation = reservationFrom(event)
+    createdAt = new Date()
     reservation.reservationNumber = reservationNumberFor(createdAt)
-    await db.collection('reservations').add({
+    reservation.notificationStatus = 'pending'
+    reservation.notificationAttempts = 0
+    reservation.lastNotificationError = ''
+    const saved = await db.collection('reservations').add({
       data: { ...reservation, createdAt }
     })
-    return {
-      ok: true,
-      reservation: {
-        ...reservation,
-        createdAt: createdAt.toISOString()
-      }
-    }
+    reservationId = saved && saved._id
   } catch (error) {
     if (error instanceof ValidationError) {
       return { ok: false, error: { code: 'INVALID_RESERVATION', message: error.message } }
     }
     console.error('submitReservation failed', error && error.message)
     return { ok: false, error: { code: 'SAVE_FAILED', message: '预约保存失败，请稍后重试' } }
+  }
+
+  const notification = await sendNotification(reservation)
+  reservation.notificationStatus = notification.status
+  reservation.notificationAttempts = 1
+  reservation.lastNotificationError = notification.error
+
+  try {
+    if (!reservationId) throw new Error('saved reservation id missing')
+    await db.collection('reservations').doc(reservationId).update({
+      data: {
+        notificationStatus: reservation.notificationStatus,
+        notificationAttempts: reservation.notificationAttempts,
+        lastNotificationError: reservation.lastNotificationError
+      }
+    })
+  } catch (error) {
+    console.error('reservation notification status update failed', error && error.message)
+  }
+
+  return {
+    ok: true,
+    reservation: {
+      reservationNumber: reservation.reservationNumber,
+      createdAt: createdAt.toISOString(),
+      checkInDate: reservation.checkInDate,
+      checkOutDate: reservation.checkOutDate,
+      nights: reservation.nights,
+      guestCount: reservation.guestCount,
+      roomCount: reservation.roomCount,
+      name: reservation.name,
+      wechatId: reservation.wechatId,
+      notes: reservation.notes,
+      status: reservation.status,
+      discountAmountCents: reservation.discountAmountCents
+    }
   }
 }

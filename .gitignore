@@ -1,4 +1,5 @@
 .DS_Store
 *.ttf
+!miniprogram/styles/font-subset.ttf
 /概念图1.png
 /.agents/

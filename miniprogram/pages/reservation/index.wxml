@@ -44,14 +44,14 @@
     <view class="row form-row">
       <text class="label">名字<text class="required">＊</text></text>
       <view class="control form-control">
-        <input class="field {{nameError ? 'field-invalid' : ''}}" value="{{name}}" data-field="name" bindinput="input" focus="{{focusField === 'name'}}" aria-label="名字，必填" placeholder="请输入你的名字" placeholder-class="placeholder" placeholder-style="font-family: LemiMilkFoam, sans-serif; font-size: 24rpx; font-weight: normal; color: #606b7d;" maxlength="40" />
+        <input class="field {{nameError ? 'field-invalid' : ''}}" value="{{name}}" data-field="name" bindinput="input" bindblur="blurInput" focus="{{focusField === 'name'}}" aria-label="名字，必填" placeholder="请输入你的微信昵称" placeholder-class="placeholder" placeholder-style="font-family: LemiMilkFoam, sans-serif; font-size: 24rpx; font-weight: normal; color: #606b7d;" maxlength="40" />
         <text wx:if="{{nameError}}" class="error-text">{{nameError}}</text>
       </view>
     </view>
     <view class="row form-row">
       <text class="label">微信号<text class="required">＊</text></text>
       <view class="control form-control">
-        <input class="field {{wechatError ? 'field-invalid' : ''}}" value="{{wechat}}" data-field="wechat" bindinput="input" focus="{{focusField === 'wechat'}}" aria-label="微信号，必填" placeholder="用于工作人员联系确认" placeholder-class="placeholder" placeholder-style="font-family: LemiMilkFoam, sans-serif; font-size: 24rpx; font-weight: normal; color: #606b7d;" maxlength="80" />
+        <input class="field {{wechatError ? 'field-invalid' : ''}}" value="{{wechat}}" data-field="wechat" bindinput="input" bindblur="blurInput" focus="{{focusField === 'wechat'}}" aria-label="微信号，必填" placeholder="用于工作人员联系确认" placeholder-class="placeholder" placeholder-style="font-family: LemiMilkFoam, sans-serif; font-size: 24rpx; font-weight: normal; color: #606b7d;" maxlength="80" />
         <text wx:if="{{wechatError}}" class="error-text">{{wechatError}}</text>
       </view>
     </view>

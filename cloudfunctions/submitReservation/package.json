@@ -4,6 +4,7 @@
   "private": true,
   "main": "index.js",
   "dependencies": {
+    "resend": "6.4.0",
     "wx-server-sdk": "~3.0.1"
   }
 }

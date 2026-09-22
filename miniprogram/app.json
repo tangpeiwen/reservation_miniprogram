@@ -10,6 +10,7 @@
     "backgroundColor": "#f0f8fc"
   },
   "style": "v2",
+  "lazyCodeLoading": "requiredComponents",
   "agent": {
     "skills": [
       {

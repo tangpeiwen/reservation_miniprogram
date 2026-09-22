@@ -9,6 +9,7 @@ let navigateOptions
 let scrollOptions
 let callOptions
 let toastOptions
+let shareMenuOptions
 let submitShouldFail = false
 let nowMs = Date.UTC(2028, 1, 26, 16)
 
@@ -45,6 +46,7 @@ vm.runInNewContext(fs.readFileSync(path.join(root, 'miniprogram/pages/reservatio
     },
     navigateTo: options => { navigateOptions = options },
     pageScrollTo: options => { scrollOptions = options },
+    showShareMenu: options => { shareMenuOptions = options },
     showToast: options => { toastOptions = options }
   }
 })
@@ -55,6 +57,17 @@ const inputEvent = (field, value) => ({ currentTarget: { dataset: { field } }, d
 
 async function main() {
   page.onLoad()
+  assert.deepEqual(JSON.parse(JSON.stringify(shareMenuOptions.menus)), ['shareAppMessage', 'shareTimeline'])
+  assert.deepEqual(JSON.parse(JSON.stringify(page.onShareAppMessage())), {
+    title: 'NE群 × 阿育吠陀体验预约',
+    path: '/pages/reservation/index',
+    imageUrl: '/assets/cat-display.png'
+  })
+  assert.deepEqual(JSON.parse(JSON.stringify(page.onShareTimeline())), {
+    title: 'NE群 × 阿育吠陀体验预约',
+    query: '',
+    imageUrl: '/assets/cat-display.png'
+  })
   const initialDate = page.data.date
   page.openCalendar()
   const initialLabel = page.data.pendingDateLabel
@@ -88,8 +101,15 @@ async function main() {
   assert.equal(page.data.reviewVisible, false)
   assert.equal(page.data.nameError, '请填写名字')
   assert.equal(page.data.wechatError, '请填写微信号')
+  assert.equal(page.data.focusField, 'name')
+  page.input(inputEvent('name', '测'))
+  assert.equal(page.data.focusField, 'name')
+  page.blurInput(inputEvent('name', '测'))
+  assert.equal(page.data.focusField, '')
   page.input(inputEvent('name', '  测试访客  '))
   page.openReview()
+  assert.equal(page.data.focusField, 'wechat')
+  page.input(inputEvent('wechat', 't'))
   assert.equal(page.data.focusField, 'wechat')
   page.input(inputEvent('wechat', '  test_wechat  '))
   page.input(inputEvent('notes', '需要安静房间'))
@@ -144,7 +164,7 @@ async function main() {
   for (const [, handler] of wxml.matchAll(/(?:bind\w+|catch\w+)="(\w+)"/g)) assert.equal(typeof page[handler], 'function', handler)
   const luminance = hex => hex.match(/\w\w/g).map(v => parseInt(v, 16) / 255).map(v => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4).reduce((sum, v, i) => sum + v * [.2126, .7152, .0722][i], 0)
   for (const background of ['ffffff', 'f0f8fc', 'edf7ff']) assert((luminance(background) + .05) / (luminance('606b7d') + .05) >= 4.5)
-  console.log('PASS: 前端校验、真实提交、服务端凭证参数、失败留表单与输入保留、跨午夜、事件绑定与灰字对比度')
+  console.log('PASS: 分享入口、前端校验、真实提交、服务端凭证参数、失败留表单与输入保留、跨午夜、事件绑定与灰字对比度')
 }
 
 main().catch(error => {

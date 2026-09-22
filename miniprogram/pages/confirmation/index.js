@@ -17,6 +17,15 @@ function fitText(value, limit) {
   return value.length > limit ? `${value.slice(0, limit - 1)}…` : value
 }
 
+function fitCanvasText(ctx, value, maxWidth) {
+  if (ctx.measureText(value).width <= maxWidth) return value
+  let shortened = value
+  while (shortened.length > 1 && ctx.measureText(`${shortened}…`).width > maxWidth) {
+    shortened = shortened.slice(0, -1)
+  }
+  return `${shortened}…`
+}
+
 function createdAtLabel(value) {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return ''
@@ -43,6 +52,9 @@ Page({
     name: '', discountLabel: '', saving: false
   },
   onLoad(options) {
+    if (wx.showShareMenu) {
+      wx.showShareMenu({ menus: ['shareAppMessage'] })
+    }
     const date = decode(options.checkInDate)
     const checkout = decode(options.checkOutDate)
     const nights = Number(options.nights)
@@ -62,6 +74,32 @@ Page({
       discountLabel: `¥${Number(options.discountAmountCents) / 100}`
     })
   },
+  onShareAppMessage() {
+    return {
+      title: 'NE群 × 阿育吠陀体验预约',
+      path: '/pages/reservation/index',
+      imageUrl: '/assets/cat-display.png'
+    }
+  },
+  loadCanvasFont(canvas) {
+    const fallback = '"LemiMilkFoam", sans-serif'
+    if (!canvas || typeof canvas.loadFont !== 'function' || !wx.getFileSystemManager || !wx.env) return fallback
+    try {
+      const fileSystem = wx.getFileSystemManager()
+      const fontPath = `${wx.env.USER_DATA_PATH}/lemi-milk-foam-subset.ttf`
+      let fontData
+      try {
+        fontData = fileSystem.readFileSync('/styles/font-subset.ttf')
+      } catch (error) {
+        fontData = fileSystem.readFileSync('styles/font-subset.ttf')
+      }
+      fileSystem.writeFileSync(fontPath, fontData)
+      const family = canvas.loadFont(fontPath)
+      return family ? `"${String(family).replace(/"/g, '')}", sans-serif` : fallback
+    } catch (error) {
+      return fallback
+    }
+  },
   saveVoucher() {
     if (this.data.saving) return
     this.setData({ saving: true })
@@ -77,7 +115,7 @@ Page({
       canvas.width = width * dpr
       canvas.height = height * dpr
       ctx.scale(dpr, dpr)
-      this.drawVoucher(ctx, width, height)
+      this.drawVoucher(ctx, width, height, this.loadCanvasFont(canvas))
       wx.canvasToTempFilePath({
         canvas,
         destWidth: width * dpr,
@@ -95,70 +133,69 @@ Page({
     this.setData({ saving: false })
     if (wx.showToast) wx.showToast({ title, icon })
   },
-  drawVoucher(ctx, width, height) {
+  drawVoucher(ctx, width, height, fontFamily = '"LemiMilkFoam", sans-serif') {
     const brown = '#402c25'
     const muted = '#5f6e7e'
+    const font = (size, weight = '') => `${weight ? `${weight} ` : ''}${size}px ${fontFamily}`
     ctx.fillStyle = '#f0f8fc'
     ctx.fillRect(0, 0, width, height)
 
     ctx.fillStyle = brown
-    ctx.font = '700 27px LemiMilkFoam, sans-serif'
+    ctx.font = font(27, '700')
     ctx.fillText('预约凭证', 24, 50)
     ctx.fillStyle = '#2e658f'
-    ctx.font = '16px LemiMilkFoam, sans-serif'
+    ctx.font = font(16)
     ctx.fillText('申请已提交', 25, 78)
 
     ctx.fillStyle = '#ffffff'
-    roundRect(ctx, 14, 104, width - 28, 370, 14)
+    roundRect(ctx, 14, 104, width - 28, 390, 14)
     ctx.fill()
 
     ctx.fillStyle = brown
-    ctx.font = '700 21px LemiMilkFoam, sans-serif'
-    ctx.fillText('预约申请凭证', 32, 143)
+    ctx.font = font(21, '700')
+    ctx.fillText('预约申请凭证', 32, 140)
     ctx.fillStyle = muted
-    ctx.font = '12px LemiMilkFoam, sans-serif'
-    ctx.textAlign = 'right'
-    ctx.fillText(`预约编号 ${fitText(this.data.reservationNumber, 18)}`, width - 32, 143)
-    ctx.textAlign = 'left'
+    ctx.font = font(11)
+    ctx.fillText(fitCanvasText(ctx, `预约编号 ${this.data.reservationNumber}`, width - 64), 32, 161)
 
     ctx.strokeStyle = '#e1eaf1'
     ctx.lineWidth = 1
-    ctx.beginPath(); ctx.moveTo(32, 163); ctx.lineTo(width - 32, 163); ctx.stroke()
+    ctx.beginPath(); ctx.moveTo(32, 175); ctx.lineTo(width - 32, 175); ctx.stroke()
     ctx.fillStyle = muted
-    ctx.font = '13px LemiMilkFoam, sans-serif'
-    ctx.fillText(`入住 · ${this.data.checkInYear}年`, 32, 193)
-    ctx.textAlign = 'right'; ctx.fillText(`离店 · ${this.data.checkOutYear}年`, width - 32, 193)
+    ctx.font = font(13)
+    ctx.fillText(`入住 · ${this.data.checkInYear}年`, 32, 204)
+    ctx.textAlign = 'right'; ctx.fillText(`离店 · ${this.data.checkOutYear}年`, width - 32, 204)
     ctx.fillStyle = brown
-    ctx.font = '22px LemiMilkFoam, sans-serif'
-    ctx.textAlign = 'left'; ctx.fillText(this.data.checkInShort, 32, 225)
-    ctx.textAlign = 'right'; ctx.fillText(this.data.checkOutShort, width - 32, 225)
-    ctx.strokeStyle = '#8da8bf'; ctx.beginPath(); ctx.moveTo(151, 216); ctx.lineTo(194, 216); ctx.stroke()
-    ctx.beginPath(); ctx.moveTo(188, 211); ctx.lineTo(194, 216); ctx.lineTo(188, 221); ctx.stroke()
+    ctx.font = font(22)
+    ctx.textAlign = 'left'; ctx.fillText(this.data.checkInShort, 32, 236)
+    ctx.textAlign = 'right'; ctx.fillText(this.data.checkOutShort, width - 32, 236)
+    ctx.strokeStyle = '#8da8bf'; ctx.beginPath(); ctx.moveTo(151, 227); ctx.lineTo(194, 227); ctx.stroke()
+    ctx.beginPath(); ctx.moveTo(188, 222); ctx.lineTo(194, 227); ctx.lineTo(188, 232); ctx.stroke()
 
     ctx.fillStyle = '#edf7ff'
-    roundRect(ctx, 32, 250, width - 64, 47, 8); ctx.fill()
-    ctx.fillStyle = '#3f5265'; ctx.font = '17px LemiMilkFoam, sans-serif'; ctx.textAlign = 'center'
-    ctx.fillText(`${this.data.nights} 晚  ·  ${this.data.guests} 人  ·  ${this.data.rooms} 间双人房`, width / 2, 280)
+    roundRect(ctx, 32, 255, width - 64, 47, 8); ctx.fill()
+    ctx.fillStyle = '#3f5265'; ctx.font = font(17); ctx.textAlign = 'center'
+    ctx.fillText(`${this.data.nights} 晚  ·  ${this.data.guests} 人  ·  ${this.data.rooms} 间双人房`, width / 2, 285)
 
-    ctx.textAlign = 'left'; ctx.fillStyle = muted; ctx.font = '15px LemiMilkFoam, sans-serif'; ctx.fillText('预约人', 32, 338)
-    ctx.textAlign = 'right'; ctx.fillStyle = brown; ctx.font = '17px LemiMilkFoam, sans-serif'; ctx.fillText(fitText(this.data.name, 12), width - 32, 338)
-    ctx.strokeStyle = '#e1eaf1'; ctx.beginPath(); ctx.moveTo(32, 359); ctx.lineTo(width - 32, 359); ctx.stroke()
+    ctx.textAlign = 'left'; ctx.fillStyle = muted; ctx.font = font(15); ctx.fillText('预约人', 32, 340)
+    ctx.textAlign = 'right'; ctx.fillStyle = brown; ctx.font = font(17); ctx.fillText(fitText(this.data.name, 12), width - 32, 340)
+    ctx.strokeStyle = '#e1eaf1'; ctx.beginPath(); ctx.moveTo(32, 361); ctx.lineTo(width - 32, 361); ctx.stroke()
 
     ctx.fillStyle = '#fff5ea'
-    roundRect(ctx, 32, 380, width - 64, 55, 8); ctx.fill()
-    ctx.textAlign = 'left'; ctx.fillStyle = '#7d4930'; ctx.font = '15px LemiMilkFoam, sans-serif'
-    ctx.fillText('社群专属', 46, 403)
-    ctx.fillStyle = '#695f59'; ctx.font = '10px LemiMilkFoam, sans-serif'
-    ctx.fillText('使用方式以工作人员确认为准', 46, 420)
-    ctx.textAlign = 'right'; ctx.fillStyle = '#a84b24'; ctx.font = '700 16px LemiMilkFoam, sans-serif'
-    ctx.fillText(`${this.data.discountLabel} 入住优惠`, width - 46, 412)
+    roundRect(ctx, 32, 378, width - 64, 55, 8); ctx.fill()
+    ctx.textAlign = 'left'; ctx.fillStyle = '#7d4930'; ctx.font = font(15)
+    ctx.fillText('社群专属', 46, 401)
+    ctx.fillStyle = '#695f59'; ctx.font = font(10)
+    ctx.fillText('使用方式以工作人员确认为准', 46, 418)
+    ctx.textAlign = 'right'; ctx.fillStyle = '#a84b24'; ctx.font = font(16, '700')
+    ctx.fillText(`${this.data.discountLabel} 入住优惠`, width - 46, 410)
 
-    ctx.textAlign = 'center'; ctx.fillStyle = muted; ctx.font = '13px LemiMilkFoam, sans-serif'
-    ctx.fillText('预约申请已提交，尚未确认订房', width / 2, 456)
-    ctx.font = '11px LemiMilkFoam, sans-serif'
-    ctx.fillText(`提交时间 ${this.data.createdAtLabel}`, width / 2, 474)
+    ctx.textAlign = 'center'; ctx.fillStyle = muted; ctx.font = font(13)
+    ctx.fillText('预约申请已提交，尚未确认订房', width / 2, 459)
+    ctx.font = font(11)
+    ctx.fillText(`提交时间 ${this.data.createdAtLabel}`, width / 2, 477)
 
-    ctx.fillStyle = brown; ctx.font = '700 16px LemiMilkFoam, sans-serif'
-    ctx.fillText('NE群 × 阿育吠陀体验预约', width / 2, 526)
+    ctx.fillStyle = brown; ctx.font = font(16, '700')
+    ctx.fillText('NE群 × 阿育吠陀体验预约', width / 2, 531)
   }
 })
